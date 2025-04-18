@@ -1,7 +1,8 @@
 local M = {}
 
+local config = require("timepilot.config").config
 local uv = vim.uv
-local handle, stdin, stdout, pid
+local handle, stdin, stdout
 
 function M.start()
 	if handle then
@@ -9,15 +10,22 @@ function M.start()
 	end
 	stdin = uv.new_pipe(false)
 	stdout = uv.new_pipe(false)
-	handle, pid = uv.spawn(
-		"/home/frenki/projects/neovim/timepilot.nvim/bin/timepilot",
+	handle = uv.spawn(
+		config.timepilot_path,
 		{ stdio = { stdin, stdout, nil } },
 		function(code, signal)
 			print("EXITED with code", code, "signal", signal)
 			handle:close()
 		end
 	)
-	print("process opened", handle, pid)
+    if handle == nil then
+        local msg = "Timepilot process not started! "
+        msg = msg .. "Is timepilot installed at '" .. config.timepilot_path
+        msg = msg .. "'?"
+        vim.notify(msg)
+        return
+    end
+    vim.notify_once("Timepilot started")
 	stdout:read_start(function(err, data)
 		if err then
 			print("STDOUT ERROR:", err)
