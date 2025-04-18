@@ -1,5 +1,4 @@
-local timepilot = require("timepilot.hello")
+local client = require("timepilot.client")
 
-vim.api.nvim_create_user_command("Hello", timepilot.say_hello, {})
-
-return timepilot
+vim.api.nvim_create_user_command("StartRPC", client.start, {})
+vim.api.nvim_create_user_command("SendEvent", client.send_event, {})

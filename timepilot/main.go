@@ -43,7 +43,9 @@ func main() {
 		case "track_event":
 			var p TrackEventParams
 			json.Unmarshal(req.Params, &p)
-			fmt.Fprintf(os.Stderr, "Received event: %+v\n", p)
+            _ = os.WriteFile("test.log", []byte(p.Type), 0644)
+            
+			//fmt.Fprintf(os.Stderr, "Received event: %+v\n", p)
 
 			res := Response{
 				Jsonrpc: "2.0",
@@ -51,6 +53,7 @@ func main() {
 				Result:  "OK",
 			}
 			_ = json.NewEncoder(os.Stdout).Encode(res)
+            os.Stdout.Sync()
 
 		default:
 			res := Response{
