@@ -32,13 +32,13 @@ func NewApp() App {
 	if err != nil {
 		log.Fatalf("DB Error: %v", err)
 	}
-    app := App{
+	app := App{
 		srv:    tprpc.NewServer(),
 		db:     db,
 		config: config,
 	}
-    app.Method("action", ActionControler)
-    return app
+	app.Method("action", ActionControler)
+	return app
 }
 
 type Handler func(db *sqlx.DB, params json.RawMessage) (any, error)
