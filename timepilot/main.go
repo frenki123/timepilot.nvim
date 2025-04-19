@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/frenki123/timepilot.nvim/timepilot/internal/tprpc"
+	"github.com/frenki123/timepilot.nvim/timepilot/internal/timepilot"
+    _ "modernc.org/sqlite"
 )
 
 func main() {
-    srv := tprpc.NewServer()
-    srv.ListenAndServe()
+    app := timepilot.NewApp()
+    app.Run()
 }
