@@ -2,9 +2,14 @@ local M = {}
 local client = require("timepilot.client")
 local config = require("timepilot.config")
 
+function M.build()
+    config.build()
+end
+
 function M.setup(user_config)
   user_config = user_config or {}
   config.set_config(user_config)
+  config.check_config()
   client.start()
   vim.api.nvim_create_autocmd("InsertEnter", {
     callback = function()
