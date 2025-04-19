@@ -3,6 +3,7 @@ local M = {}
 local config = require("timepilot.config").config
 local uv = vim.uv
 local handle, stdin, stdout
+local id = 0
 
 function M.start()
 	if handle then
@@ -37,24 +38,20 @@ function M.start()
 	end)
 end
 
-function M.send_event()
+function M.send_event(method, params)
 	if not stdin then
 		print("NOT RUNNING RPC")
 		return
 	end
 
-	local msg = {
-		jsonrpc = "2.0",
-		id = 1,
-		method = "track_event",
-		params = {
-			type = "insert_enter",
-			filepath = vim.fn.expand("%:p"),
-			timestamp = os.time(),
-		},
-	}
-
-	local json = vim.fn.json_encode(msg) .. "\n"
+    id = id + 1
+    local res = {
+        jsonrpc = "2.0",
+        id = id,
+        method = method,
+        params = params,
+    }
+    local json = vim.fn.json_encode(res) .. "\n"
 	stdin:write(json)
 end
 
