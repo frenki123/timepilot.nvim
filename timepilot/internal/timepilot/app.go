@@ -37,7 +37,10 @@ func NewApp() App {
 		db:     db,
 		config: config,
 	}
-	app.Method("action", ActionControler)
+	app.Method("session/enter", SessionEnter)
+	app.Method("session/leave", SessionLeave)
+	app.Method("buffer/enter", BufferEnter)
+	app.Method("buffer/leave", BufferLeave)
 	return app
 }
 

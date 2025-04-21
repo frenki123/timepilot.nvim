@@ -23,13 +23,23 @@ func GetDB(directory string) (*sqlx.DB, error) {
 }
 
 func CreateTable(db *sqlx.DB) error {
-	schema := `CREATE TABLE IF NOT EXISTS actions (
-        ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        filename TEXT,
+	schema := `
+    CREATE TABLE IF NOT EXISTS project_timer (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        path TEXT NOT NULL,
+        started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        end_at DATETIME
+    );
+    CREATE TABLE IF NOT EXISTS file_timer (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        project_id INTEGER NOT NULL,
+        path TEXT NOT NULL,
         filetype TEXT,
-        action TEXT,
-        date DATE DEFAULT CURRENT_TIMESTAMP
-    );`
+        started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        end_at DATETIME,
+        FOREIGN KEY(project_id) REFERENCES project_timer(id)
+    );
+    `
 	_, err := db.Exec(schema)
 	if err != nil {
 		return err
