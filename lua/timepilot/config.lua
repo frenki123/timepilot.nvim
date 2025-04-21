@@ -35,7 +35,9 @@ M.config = {
     "trouble",
     "VoltWindow",
     "undotree",
+    "blink-cmp-menu",
   },
+  timeout = 0.5,
 }
 
 function M.set_config(user_config)

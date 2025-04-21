@@ -5,24 +5,27 @@ local config = require("timepilot.config").config
 
 local uv = vim.uv
 local project
+local idle = false
+local idle_timeout = config.timeout * 60 * 1000
+local idle_timer
 
 local function match_filetype(ft)
-   for _, value in pairs(config.disabled_filetypes) do
-      local matcher = "^" .. value .. (value:sub(-1) == "*" and "" or "$")
-      if ft:match(matcher) then
-         return true
-      end
-   end
+  for _, value in pairs(config.disabled_filetypes) do
+    local matcher = "^" .. value .. (value:sub(-1) == "*" and "" or "$")
+    if ft:match(matcher) then
+      return true
+    end
+  end
 
-   return false
+  return false
 end
 
 local function should_ignore()
-   return vim.tbl_contains(config.disabled_filetypes, vim.bo.ft)
-      or match_filetype(vim.bo.ft)
-      or vim.api.nvim_get_option_value("buftype", { buf = 0 }) == "terminal"
-      or vim.fn.reg_executing() ~= ""
-      or vim.fn.reg_recording() ~= ""
+  return vim.tbl_contains(config.disabled_filetypes, vim.bo.ft)
+    or match_filetype(vim.bo.ft)
+    or vim.api.nvim_get_option_value("buftype", { buf = 0 }) == "terminal"
+    or vim.fn.reg_executing() ~= ""
+    or vim.fn.reg_recording() ~= ""
 end
 
 local function run_cmd(cmd, cmd_args, cwd, callback)
@@ -55,6 +58,40 @@ local function run_cmd(cmd, cmd_args, cwd, callback)
   end)
 end
 
+local function on_idle()
+  if idle then
+    return
+  end -- already idle
+
+  idle = true
+  local filename = vim.api.nvim_buf_get_name(0)
+  client.send_event("session/leave", { project = project })
+  if not should_ignore() then
+    client.send_event("buffer/leave", { project = project, filename = filename })
+  end
+end
+
+local function on_activity()
+  if idle then
+    -- Back from the dead
+    idle = false
+    local filetype = vim.bo.filetype
+    local filename = vim.api.nvim_buf_get_name(0)
+    client.send_event("session/enter", { project = project })
+    if not should_ignore() then
+      client.send_event("buffer/enter", { project = project, filename = filename, filetype = filetype })
+    end
+  end
+
+  -- Reset timer
+  if idle_timer then
+    idle_timer:stop()
+    idle_timer:close()
+  end
+  idle_timer = uv.new_timer()
+  idle_timer:start(idle_timeout, 0, vim.schedule_wrap(on_idle))
+end
+
 function M.autocmd()
   local augroup = vim.api.nvim_create_augroup("Timepilot", { clear = true })
   --Start client
@@ -63,6 +100,10 @@ function M.autocmd()
     once = true,
     callback = function()
       client.start()
+      on_activity()
+      vim.on_key(function()
+        on_activity()
+      end, vim.api.nvim_create_namespace("timepilot_idle"))
     end,
   })
 
