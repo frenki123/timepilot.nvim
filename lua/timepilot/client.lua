@@ -5,6 +5,37 @@ local uv = vim.uv
 local handle, stdin, stdout
 local id = 0
 
+local function notify(msg, level)
+    vim.schedule(function ()
+      vim.notify(msg, level)
+    end)
+end
+
+local function print_response(data)
+  local decoded = vim.json.decode(data)
+  local result = decoded.result
+  if not result then
+    notify("Unknown Result", vim.log.levels.WARN)
+    return
+  end
+  local kind = result.type
+  local res_data = result.data
+  if kind == "DEBUG" and config.debug then
+    notify(res_data, vim.log.levels.DEBUG)
+    return
+  end
+  if kind == "INFO/TIME" then
+    local msg = string.format("Total time in project: %.2f min", res_data)
+    notify(msg, vim.log.levels.INFO)
+    return
+  end
+  if kind == "INFO/FILE" then
+    local msg = string.format("Most edited file:\n- %s\n- %s\n- %s min", data.filepath, data.filetype, data.time)
+    notify(msg, vim.log.levels.INFO)
+    return
+  end
+end
+
 function M.start()
   if handle then
     return
@@ -27,7 +58,7 @@ function M.start()
     if err then
       print("STDOUT ERROR:", err)
     elseif data then
-      print("STDOUT:", vim.inspect(data))
+      print_response(data)
     else
       print("No data (maybe CLI exited)")
     end

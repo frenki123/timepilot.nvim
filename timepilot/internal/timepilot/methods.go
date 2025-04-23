@@ -31,8 +31,8 @@ type SaveStore struct {
 }
 
 type Response struct {
-    Type string
-    Data any
+	Type string `json:"type"`
+	Data any    `json:"data"`
 }
 
 func SessionEnter(db *sqlx.DB, params json.RawMessage) (any, error) {
@@ -47,10 +47,10 @@ func SessionEnter(db *sqlx.DB, params json.RawMessage) (any, error) {
 	if err := storeSessionEnter(db, project); err != nil {
 		return "", err
 	}
-    return Response{
-        Type: "DEBUG",
-        Data: "Stored Project Enter",
-    }, nil
+	return Response{
+		Type: "DEBUG",
+		Data: "Stored Project Enter",
+	}, nil
 }
 
 func storeSessionEnter(db *sqlx.DB, project Project) error {
@@ -83,10 +83,10 @@ func SessionLeave(db *sqlx.DB, params json.RawMessage) (any, error) {
 	if err := updatedSessionLeave(db, project); err != nil {
 		return "", err
 	}
-    return Response{
-        Type: "DEBUG",
-        Data: "Stored Project Leave",
-    }, nil
+	return Response{
+		Type: "DEBUG",
+		Data: "Stored Project Leave",
+	}, nil
 }
 
 func updatedSessionLeave(db *sqlx.DB, project Project) error {
@@ -123,10 +123,10 @@ func BufferEnter(db *sqlx.DB, params json.RawMessage) (any, error) {
 	if err := storeBufferEnter(db, buffer); err != nil {
 		return "", err
 	}
-    return Response{
-        Type: "DEBUG",
-        Data: "Stored Buffer Enter",
-    }, nil
+	return Response{
+		Type: "DEBUG",
+		Data: "Stored Buffer Enter",
+	}, nil
 }
 
 func storeBufferEnter(db *sqlx.DB, buffer Buffer) error {
@@ -164,10 +164,10 @@ func BufferLeave(db *sqlx.DB, params json.RawMessage) (any, error) {
 	if err := updateBufferLeave(db, buffer); err != nil {
 		return "", err
 	}
-    return Response{
-        Type: "DEBUG",
-        Data: "Stored Buffer Leave",
-    }, nil
+	return Response{
+		Type: "DEBUG",
+		Data: "Stored Buffer Leave",
+	}, nil
 }
 
 func updateBufferLeave(db *sqlx.DB, buffer Buffer) error {
@@ -209,10 +209,10 @@ func GetProjectTime(db *sqlx.DB, params json.RawMessage) (any, error) {
 	if err != nil {
 		return "", err
 	}
-    return Response{
-        Type: "INFO/TIME",
-        Data: time,
-    }, nil
+	return Response{
+		Type: "INFO/TIME",
+		Data: time,
+	}, nil
 }
 
 func getProjectTime(db *sqlx.DB, proj ProjectName) (int, error) {
@@ -237,9 +237,9 @@ func getProjectTime(db *sqlx.DB, proj ProjectName) (int, error) {
 }
 
 type FileResult struct {
-	Filepath string
-	Filetype string
-	Time     int
+	Filepath string `json:"filepath"`
+	Filetype string `json:"filetype"`
+	Time     int    `json:"time"`
 }
 
 func GetMostEditedFile(db *sqlx.DB, params json.RawMessage) (any, error) {
@@ -255,10 +255,10 @@ func GetMostEditedFile(db *sqlx.DB, params json.RawMessage) (any, error) {
 	if err != nil {
 		return "", err
 	}
-    return Response{
-        Type: "INFO/FILE",
-        Data: file,
-    }, nil
+	return Response{
+		Type: "INFO/FILE",
+		Data: file,
+	}, nil
 }
 
 func getMostEditedFile(db *sqlx.DB, proj ProjectName) (FileResult, error) {

@@ -38,6 +38,7 @@ M.config = {
     "blink-cmp-menu",
   },
   timeout = 0.5,
+  debug = false,
 }
 
 function M.set_config(user_config)
