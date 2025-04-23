@@ -17,3 +17,16 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 	end,
 }
 ```
+
+## Configuration
+```lua
+require("timepilot").setup({
+  timepilot_path = "timepilot", -- Path to the `timepilot` daemon binary
+  autoinstall = true,           -- Auto-install the daemon if missing
+  timeout = 0.5,                -- Idle timeout in minutes
+  debug = false,                -- Show debug notifications
+})
+```
+## Disclaimer
+
+Still WIP – bugs possible. If it breaks your sense of time, you’re welcome. PRs and issues welcome!
