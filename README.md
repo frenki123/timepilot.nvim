@@ -27,6 +27,12 @@ require("timepilot").setup({
   debug = false,                -- Show debug notifications
 })
 ```
+
+## Usage
+Commands 
+1. `:GetProjectTime` - get total time spent on the project (project is git root directory or directory where you started neovim)
+2. `:GetFileTime` - get the file on which you spent most time
+
 ## Disclaimer
 
-Still WIP – bugs possible. If it breaks your sense of time, you’re welcome. PRs and issues welcome!
+Still WIP – bugs possible, especially with IDLE detection. Tests missing!
