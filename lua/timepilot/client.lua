@@ -12,7 +12,11 @@ local function notify(msg, level)
 end
 
 local function print_response(data)
-  local decoded = vim.json.decode(data)
+  local ok, decoded = pcall(vim.json.decode, data)
+  if not ok then
+    local msg = string.format("Failed to decode json: '%s'", vim.inspect(data))
+    notify(msg, vim.log.levels.WARN)
+  end
   local result = decoded.result
   if not result then
     notify("Unknown Result", vim.log.levels.WARN)
@@ -30,7 +34,7 @@ local function print_response(data)
     return
   end
   if kind == "INFO/FILE" then
-    local msg = string.format("Most edited file:\n- %s\n- %s\n- %s min", data.filepath, data.filetype, data.time)
+    local msg = string.format("Most edited file:\n- %s\n- %s\n- %s min", res_data.filepath, res_data.filetype, res_data.time)
     notify(msg, vim.log.levels.INFO)
     return
   end
