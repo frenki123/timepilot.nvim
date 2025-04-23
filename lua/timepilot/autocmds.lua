@@ -111,7 +111,8 @@ function M.autocmd()
     group = augroup,
     callback = function()
       run_cmd("git", { "rev-parse", "--show-toplevel" }, vim.fn.getcwd(), function(output)
-        project = output
+        project = output or vim.fn.getcwd()
+        project:match("^%s*(.-)%s*$")
         vim.defer_fn(function()
           client.send_event("session/enter", { project = project })
         end, 250)
@@ -119,7 +120,7 @@ function M.autocmd()
     end,
   })
 
-  vim.api.nvim_create_autocmd("VimLeave", {
+  vim.api.nvim_create_autocmd("VimLeavePre", {
     group = augroup,
     callback = function()
       client.send_event("session/leave", { project = project })
@@ -134,6 +135,10 @@ function M.autocmd()
       end
       local filetype = vim.bo.filetype
       local filename = vim.api.nvim_buf_get_name(0)
+      local buftype = vim.bo.buftype
+      if filename == "" or buftype ~= "" then
+        return
+      end
       client.send_event("buffer/enter", { project = project, filename = filename, filetype = filetype })
     end,
   })
@@ -145,9 +150,22 @@ function M.autocmd()
         return
       end
       local filename = vim.api.nvim_buf_get_name(0)
+      local buftype = vim.bo.buftype
+      if filename == "" or buftype ~= "" then
+        return
+      end
       client.send_event("buffer/leave", { project = project, filename = filename })
     end,
   })
+end
+
+function M.set_keys()
+  vim.api.nvim_create_user_command("GetProjectTime", function()
+    client.send_event("data/project", { project_name = project })
+  end, {})
+  vim.api.nvim_create_user_command("GetFileTime", function()
+    client.send_event("data/file", { project_name = project })
+  end, {})
 end
 
 return M

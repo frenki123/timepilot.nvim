@@ -11,5 +11,6 @@ function M.setup(user_config)
   user_config = user_config or {}
   config.set_config(user_config)
   autocmd.autocmd()
+  autocmd.set_keys()
 end
 return M

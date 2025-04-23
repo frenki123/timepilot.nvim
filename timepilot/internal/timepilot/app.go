@@ -41,6 +41,8 @@ func NewApp() App {
 	app.Method("session/leave", SessionLeave)
 	app.Method("buffer/enter", BufferEnter)
 	app.Method("buffer/leave", BufferLeave)
+	app.Method("data/project", GetProjectTime)
+	app.Method("data/file", GetMostEditedFile)
 	return app
 }
 
